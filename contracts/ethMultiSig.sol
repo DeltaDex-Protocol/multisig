@@ -1,6 +1,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.13;
 
+/// @title MultiSigWallet
+/// @author t4sk & DeltaDex
+/// @notice multiple signature wallet
+/// @dev Consider adding more funcitons => addOwner(), updateNumConfirmations(), split()
+
 contract MultiSigWallet {
     event Deposit(address indexed sender, uint amount, uint balance);
     event SubmitTransaction(
