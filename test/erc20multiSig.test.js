@@ -23,8 +23,38 @@ describe("Multi Sig Wallet Tests", () => {
     console.log("MultiSig:", multisig.address);
   });
 
-  it("Should receive payment", async () => {
+  it("Should deploy ERC20 token: ", async () => {
+    signers = await ethers.getSigners();
 
+    const ERC20 = await ethers.getContractFactory("DAI");
+    erc20 = await ERC20.deploy();
+    await erc20.deployed();
+    console.log("erc20:", erc20.address);
+  });
+
+  it("Should deposit erc20", async () => {
+    let amount = "100";
+    amount = ethers.utils.parseEther(amount);
+
+    let tx = await erc20.connect(signers[0]).approve(multisig.address, amount);
+
+    await tx.wait();
+
+    let tx1 = await multisig
+      .connect(signers[0])
+      .depositERC20(erc20.address, amount);
+
+    let tokenBal = await erc20.balanceOf(multisig.address);
+
+    expect(tokenBal).to.equal(amount);
+
+    console.log("tokenbal", tokenBal);
+
+    let internalBal = await multisig.ERC20_Balances(erc20.address);
+    console.log("internalbal", internalBal);
+  });
+
+  it("Should receive payment in ether", async () => {
     let amount = "1";
     amount = ethers.utils.parseEther(amount);
 

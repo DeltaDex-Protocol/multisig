@@ -24,7 +24,6 @@ describe("Multi Sig Wallet Tests", () => {
   });
 
   it("Should receive payment", async () => {
-
     let amount = "1";
     amount = ethers.utils.parseEther(amount);
 
@@ -38,25 +37,24 @@ describe("Multi Sig Wallet Tests", () => {
     let walletBal = await ethers.provider.getBalance(multisig.address);
 
     expect(walletBal).to.equal(amount);
-
   });
 
   it("Owners should be able to submit transaction", async () => {
     let amount = "0.5";
     amount = ethers.utils.parseEther(amount);
 
-    let tx = await multisig.connect(signers[0]).submitTransaction(signers[4].address,amount,0);
+    let tx = await multisig
+      .connect(signers[0])
+      .submitTransaction(signers[4].address, amount, 0);
 
     await tx.wait();
 
     let pendingTx = await multisig.getTransaction(0);
 
     expect(await pendingTx.value).to.equal(amount);
-
   });
 
   it("Owners should be able to confirm transaction", async () => {
-
     let owner1 = await multisig.connect(signers[0]).confirmTransaction(0);
 
     await owner1.wait();
@@ -70,42 +68,30 @@ describe("Multi Sig Wallet Tests", () => {
     expect(await pendingTx.numConfirmations).to.equal(2);
 
     // console.log("pending tx", pendingTx);
-
   });
 
   it("Owners should be able to execute transaction", async () => {
-
-
     let bal_t0 = await ethers.provider.getBalance(signers[4].address);
-    bal_t0 = ethers.utils.formatUnits(
-      ethers.BigNumber.from(bal_t0),
-      "ether"
-    );
-
+    bal_t0 = ethers.utils.formatUnits(ethers.BigNumber.from(bal_t0), "ether");
 
     let tx = await multisig.connect(signers[0]).executeTransaction(0);
     await tx.wait();
 
     let bal_t1 = await ethers.provider.getBalance(signers[4].address);
-    bal_t1 = ethers.utils.formatUnits(
-      ethers.BigNumber.from(bal_t1),
-      "ether"
-    );
+    bal_t1 = ethers.utils.formatUnits(ethers.BigNumber.from(bal_t1), "ether");
 
     let debitAmount = bal_t1 - bal_t0;
 
-    amount = Number(ethers.utils.formatUnits(
-      ethers.BigNumber.from(amount),
-      "ether"
-    ));
+    amount = Number(
+      ethers.utils.formatUnits(ethers.BigNumber.from(amount), "ether")
+    );
 
     // console.log(debitAmount);
 
     expect(await debitAmount).to.equal(amount);
-
   });
 
-  it("Owners should be able to confirm transaction", async () => {
+  /*   it("Owners should be able to confirm transaction", async () => {
 
     let owner1 = await multisig.connect(signers[0]).confirmTransaction(0);
 
@@ -121,5 +107,5 @@ describe("Multi Sig Wallet Tests", () => {
 
     // console.log("pending tx", pendingTx);
 
-  });
+  }); */
 });

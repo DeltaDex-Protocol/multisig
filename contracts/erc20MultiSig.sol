@@ -36,6 +36,9 @@ contract erc20MultiSigWallet {
         uint numConfirmations;
     }
 
+    // address erc20 => balance
+    mapping(address => uint) public ERC20_Balances;
+
     // mapping from tx index => owner => bool
     mapping(uint => mapping(address => bool)) public isConfirmed;
 
@@ -84,6 +87,12 @@ contract erc20MultiSigWallet {
 
     receive() external payable {
         emit Deposit(msg.sender, msg.value, address(this).balance);
+    }
+
+    function depositERC20(address token, uint amount) public returns (bool) {
+        IERC20(token).transferFrom(msg.sender,address(this),amount);
+        ERC20_Balances[token] += amount;
+        return true;
     }
 
     function submitTransaction(
